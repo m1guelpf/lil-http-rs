@@ -296,7 +296,7 @@ mod tests {
         assert_eq!(response.body, Body::Text("Method Not Allowed".to_string()));
         assert_eq!(
             response.headers.get("Allow").unwrap(),
-            &"PUT, GET".to_string()
+            &"GET, PUT".to_string()
         );
     }
 }

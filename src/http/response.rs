@@ -169,16 +169,15 @@ impl Response {
     /// ```
     #[allow(clippy::must_use_candidate)]
     pub fn method_not_allowed(methods: &[Method]) -> Self {
+        let mut methods = methods
+            .iter()
+            .map(|m| m.to_string())
+            .collect::<Vec<String>>();
+        methods.sort();
+
         Self::text("Method Not Allowed")
             .status(StatusCode::MethodNotAllowed)
-            .header(
-                "Allow",
-                &methods
-                    .iter()
-                    .map(|m| m.to_string())
-                    .collect::<Vec<String>>()
-                    .join(", "),
-            )
+            .header("Allow", &methods.join(", "))
     }
 
     /// Set the status code of the response.
