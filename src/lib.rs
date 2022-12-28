@@ -19,14 +19,14 @@
 //! async fn main() {
 //!    let mut http = Server::new().unwrap();
 //!
-//!   http.routes
-//!       .get("/", |request| {
-//!         println!("Received {} request to {}", request.method, request.path);
+//!    http.routes
+//!        .get("/", |request| {
+//!            println!("Received {} request to {}", request.method, request.path);
 //!
-//!        Response::text("Hello, World!")
-//!    });
+//!            Response::text("Hello, World!")
+//!        });
 //!
-//!   http.run().await;
+//!    http.run().await;
 //! }
 //! ```
 

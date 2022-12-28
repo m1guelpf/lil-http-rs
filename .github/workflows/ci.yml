@@ -47,3 +47,59 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: test
+  codecov:
+    name: Coverage
+    runs-on: ubuntu-latest
+    env:
+      RUSTFLAGS: -Cinstrument-coverage
+      RUSTDOCFLAGS: -C instrument-coverage -Z unstable-options --persist-doctests target/debug/doctestbins
+      LLVM_PROFILE_FILE: profile-%m.profraw
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Install rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          override: true
+          components: llvm-tools-preview
+      - name: Cache build
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: cache
+      - name: Install cargo-binutils
+        run: cargo install cargo-binutils
+      - name: Build tests with coverage
+        run: |
+          cargo test --locked --all-features --all-targets --no-fail-fast --no-run
+          cargo test --locked --all-features --doc --no-fail-fast -- --help
+      - name: Run tests with coverage
+        run: |
+          cargo test --locked --all-features --all-targets --no-fail-fast -- --nocapture
+          cargo test --locked --all-features --doc --no-fail-fast
+      - name: Merge execution traces
+        run: cargo profdata -- merge -sparse $(find . -iname "profile-*.profraw") -o profile.profdata
+      - name: Export to lcov format for codecov
+        run: cargo cov -- export
+          --format=lcov > profile.lcov
+          --instr-profile=profile.profdata
+          $(
+          for file in
+          $(
+          cargo test --locked --all-features --all-targets
+          --no-fail-fast --no-run --message-format=json
+          | jq -r "select(.profile.test == true) | .filenames[]"
+          | grep -v dSYM -
+          )
+          target/debug/doctestbins/*/rust_out;
+          do
+          [[ -x $file ]] && printf "%s %s " -object $file ;
+          done
+          )
+      - name: Submit to codecov.io
+        uses: codecov/codecov-action@v3.1.1
+        with:
+          flags: test
+          fail_ci_if_error: true
+          verbose: true
