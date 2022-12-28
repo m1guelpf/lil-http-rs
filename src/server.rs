@@ -41,6 +41,7 @@ impl Server {
     /// # Errors
     ///
     /// Will return an error if port 3000 is already in use.
+    #[must_use]
     pub fn new() -> Result<Self> {
         Self::with_port("3000")
     }
@@ -48,6 +49,7 @@ impl Server {
     /// # Errors
     ///
     /// Will return an error if the port is already in use.
+    #[must_use]
     pub fn with_port(port: &str) -> Result<Self> {
         let std_listener = std::net::TcpListener::bind(format!("0.0.0.0:{port}"))?;
         let listener = TcpListener::from_std(std_listener)?;
@@ -94,5 +96,32 @@ impl Server {
         }
 
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn test_can_create_server() {
+        let _ = Server::new().unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_can_create_server_with_port() {
+        let _ = Server::with_port("3001").unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_can_run_server() {
+        let http = Server::new().unwrap();
+
+        // run the server without blocking the test
+        tokio::spawn(async move {
+            http.run().await;
+        });
+
+        let _ = TcpStream::connect("127.0.0.1:3000").await.unwrap();
     }
 }

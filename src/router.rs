@@ -50,20 +50,6 @@ impl Router {
     }
 
     /// Register a GET route.
-    ///
-    /// # Example
-    ///
-    /// ```rust,no_run
-    /// use lil_http::{Request, Response, Server};
-    ///
-    /// let mut server = Server::new().unwrap();
-    ///
-    /// server.routes.get("/", |request| {
-    ///     println!("Received {} request to {}", request.method, request.path);
-    ///     Response::text("Hello, World!")
-    /// });
-    /// ```
-    #[allow(rustdoc::private_doc_tests)]
     pub fn get(
         &mut self,
         path: &str,
@@ -73,19 +59,6 @@ impl Router {
     }
 
     /// Register a POST route.
-    ///
-    /// # Example
-    /// ```rust,no_run
-    /// use lil_http::{Request, Response, Server};
-    ///
-    /// let mut server = Server::new().unwrap();
-    ///
-    /// server.routes.post("/", |request| {
-    ///    println!("Received {} request to {}", request.method, request.path);
-    ///    Response::text("Hello, World!")
-    /// });
-    /// ```
-    #[allow(rustdoc::private_doc_tests)]
     pub fn post(
         &mut self,
         path: &str,
@@ -95,19 +68,6 @@ impl Router {
     }
 
     /// Register a PUT route.
-    ///
-    /// # Example
-    /// ```rust,no_run
-    /// use lil_http::{Request, Response, Server};
-    ///
-    /// let mut server = Server::new().unwrap();
-    ///
-    /// server.routes.put("/", |request| {
-    ///    println!("Received {} request to {}", request.method, request.path);
-    ///    Response::text("Hello, World!")
-    /// });
-    /// ```
-    #[allow(rustdoc::private_doc_tests)]
     pub fn put(
         &mut self,
         path: &str,
@@ -117,19 +77,6 @@ impl Router {
     }
 
     /// Register a DELETE route.
-    ///
-    /// # Example
-    /// ```rust,no_run
-    /// use lil_http::{Request, Response, Server};
-    ///
-    /// let mut server = Server::new().unwrap();
-    ///
-    /// server.routes.delete("/", |request| {
-    ///   println!("Received {} request to {}", request.method, request.path);
-    ///    Response::text("Hello, World!")
-    /// });
-    /// ```
-    #[allow(rustdoc::private_doc_tests)]
     pub fn delete(
         &mut self,
         path: &str,
@@ -237,6 +184,32 @@ mod tests {
         assert!(router.routes.contains_key(&Route {
             path: "/test/path".to_string(),
             methods: vec![Method::Post]
+        }));
+    }
+
+    #[test]
+    fn test_router_put() {
+        let mut router = Router::new();
+
+        router.put("/test/path", |_request| Response::text(""));
+
+        assert_eq!(router.routes.len(), 1);
+        assert!(router.routes.contains_key(&Route {
+            path: "/test/path".to_string(),
+            methods: vec![Method::Put]
+        }));
+    }
+
+    #[test]
+    fn test_router_delete() {
+        let mut router = Router::new();
+
+        router.delete("/test/path", |_request| Response::text(""));
+
+        assert_eq!(router.routes.len(), 1);
+        assert!(router.routes.contains_key(&Route {
+            path: "/test/path".to_string(),
+            methods: vec![Method::Delete]
         }));
     }
 
