@@ -40,6 +40,7 @@ pub struct Response {
 }
 
 impl Response {
+    #[allow(clippy::must_use_candidate)]
     pub fn text(body: &str) -> Self {
         Self {
             status: StatusCode::Ok,
@@ -50,6 +51,7 @@ impl Response {
         }
     }
 
+    #[allow(clippy::must_use_candidate)]
     pub fn json(body: &Value) -> Self {
         Self {
             status: StatusCode::Ok,
@@ -60,6 +62,7 @@ impl Response {
         }
     }
 
+    #[allow(clippy::must_use_candidate)]
     pub fn not_found() -> Self {
         let mut resp = Self::text("Not Found");
         resp.status = StatusCode::NotFound;
@@ -67,6 +70,7 @@ impl Response {
         resp
     }
 
+    #[allow(clippy::must_use_candidate)]
     pub fn invalid_request() -> Self {
         let mut resp = Self::text("Invalid Request");
         resp.status = StatusCode::BadRequest;
@@ -74,6 +78,7 @@ impl Response {
         resp
     }
 
+    #[allow(clippy::must_use_candidate)]
     pub fn method_not_allowed(methods: &[Method]) -> Self {
         let mut resp = Self::text("Method Not Allowed");
 

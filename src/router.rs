@@ -85,3 +85,9 @@ impl Router {
         }
     }
 }
+
+impl Default for Router {
+    fn default() -> Self {
+        Self::new()
+    }
+}

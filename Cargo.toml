@@ -1,7 +1,13 @@
 [package]
-name = "lil-http"
+name = "lil_http"
 version = "0.1.0"
 edition = "2021"
+description = "A simple web framework with no external dependencies"
+license = "MIT"
+repository = "https://github.com/m1guelpf/lil-http-rs"
+readme = "README.md"
+keywords = ["web", "framework", "http"]
+categories = ["web-programming::frameworks"]
 
 [dependencies]
 anyhow = "1.0.68"

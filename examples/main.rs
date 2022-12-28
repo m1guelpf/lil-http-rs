@@ -1,12 +1,4 @@
-#![warn(clippy::all, clippy::pedantic, clippy::nursery)]
-
-use server::Server;
-
-use crate::http::{Body, Response};
-
-mod http;
-mod router;
-mod server;
+use lil_http::{Body, Response, Server};
 
 #[tokio::main]
 async fn main() {

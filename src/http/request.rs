@@ -44,6 +44,10 @@ pub enum Body {
 }
 
 impl Body {
+    /// # Panics
+    ///
+    /// Will panic if the content type is `application/json` and the body is not valid JSON.
+    #[must_use]
     pub fn parse(body: String, content_type: Option<&String>) -> Self {
         match content_type {
             Some(content_type) => match content_type.as_str() {

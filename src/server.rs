@@ -11,10 +11,16 @@ pub struct Server {
 }
 
 impl Server {
+    /// # Errors
+    ///
+    /// Will return an error if port 3000 is already in use.
     pub fn new() -> Result<Self> {
         Self::with_port("3000")
     }
 
+    /// # Errors
+    ///
+    /// Will return an error if the port is already in use.
     pub fn with_port(port: &str) -> Result<Self> {
         let std_listener = std::net::TcpListener::bind(format!("0.0.0.0:{port}"))?;
         let listener = TcpListener::from_std(std_listener)?;
@@ -26,6 +32,10 @@ impl Server {
         })
     }
 
+    /// # Panics
+    ///
+    /// Will panic if the server fails to accept a connection.
+    #[must_use = "Remember to start the server!"]
     pub async fn run(&self) {
         loop {
             let incoming = self.listener.accept().await;

@@ -15,6 +15,8 @@ A barebones HTTP 1.1 framework, built in Rust with no external dependencies (oth
 ## Usage
 
 ```rust
+use lil_http::{Body, Response, Server};
+
 #[tokio::main]
 async fn main() {
     let mut http = Server::new().unwrap();
