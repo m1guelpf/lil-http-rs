@@ -1,11 +1,9 @@
+use crate::{Body, Method};
+use serde_json::Value;
 use std::{
     collections::HashMap,
     fmt::{Display, Formatter},
 };
-
-use serde_json::Value;
-
-use super::Method;
 
 const CRLF: &str = "\r\n";
 
@@ -45,99 +43,113 @@ impl Display for StatusCode {
 #[derive(Debug, Clone)]
 pub struct Response {
     /// The status code of the response.
-    pub status: StatusCode,
+    pub status_code: StatusCode,
     /// The HTTP headers of the response.
     pub headers: HashMap<String, String>,
     /// The body of the response.
-    pub body: Option<String>,
+    pub body: Body,
 }
 
 impl Response {
+    /// Create an empty response with the 200 OK status code.
+    ///
+    /// # Example
+    /// ```
+    /// use lil_http::Response;
+    /// # use lil_http::{StatusCode, Body};
+    ///
+    /// let response = Response::ok();
+    ///
+    /// # assert_eq!(response.body, Body::None);
+    /// # assert_eq!(response.headers.len(), 0);
+    /// # assert_eq!(response.status_code, StatusCode::Ok);
+    /// ```
+    #[must_use]
+    pub fn ok() -> Self {
+        Self {
+            body: Body::None,
+            status_code: StatusCode::Ok,
+            headers: HashMap::new(),
+        }
+    }
+
     /// Create a new text response with the given content.
     ///
     /// # Example
     /// ```
-    /// use lil_http::{Response, StatusCode};
+    /// use lil_http::Response;
+    /// # use lil_http::{StatusCode, Body};
     ///
     /// let response = Response::text("Hello, World!");
     ///
-    /// assert_eq!(response.status, StatusCode::Ok);
-    /// assert_eq!(response.headers.get("Content-Type"), Some(&"text/plain".to_string()));
-    /// assert_eq!(response.body, Some("Hello, World!".to_string()));
+    /// # assert_eq!(response.status_code, StatusCode::Ok);
+    /// # assert_eq!(response.body, Body::Text("Hello, World!".to_string()));
+    /// # assert_eq!(response.headers.get("Content-Type"), Some(&"text/plain".to_string()));
     /// ```
-    #[allow(clippy::must_use_candidate)]
+    #[must_use]
     pub fn text(body: &str) -> Self {
-        Self {
-            status: StatusCode::Ok,
-            headers: vec![("Content-Type".into(), "text/plain".into())]
-                .into_iter()
-                .collect(),
-            body: Some(body.to_string()),
-        }
+        Self::ok()
+            .header("Content-Type", "text/plain")
+            .body(Body::Text(body.to_string()))
     }
 
     /// Create a new JSON response with the given content.
     ///
     /// # Example
     /// ```
-    /// use lil_http::{Response, StatusCode};
+    /// use lil_http::Response;
+    /// # use lil_http::{StatusCode, Body};
     /// use serde_json::json;
     ///
     /// let response = Response::json(&json!({
     ///    "message": "Hello, World!"
     /// }));
     ///
-    /// assert_eq!(response.status, StatusCode::Ok);
-    /// assert_eq!(response.headers.get("Content-Type"), Some(&"application/json".to_string()));
-    /// assert_eq!(response.body, Some("{\"message\":\"Hello, World!\"}".to_string()));
+    /// # assert_eq!(response.status_code, StatusCode::Ok);
+    /// # assert_eq!(response.body, Body::Json(json!({ "message": "Hello, World!" })));
+    /// # assert_eq!(response.headers.get("Content-Type"), Some(&"application/json".to_string()));
     /// ```
-    #[allow(clippy::must_use_candidate)]
+    #[must_use]
     pub fn json(body: &Value) -> Self {
-        Self {
-            status: StatusCode::Ok,
-            headers: vec![("Content-Type".into(), "application/json".into())]
-                .into_iter()
-                .collect(),
-            body: Some(body.to_string()),
-        }
+        Self::ok()
+            .header("Content-Type", "application/json")
+            .body(Body::Json(body.clone()))
     }
 
     /// Create a 404 Not Found response.
     ///
     /// # Example
     /// ```
-    /// use lil_http::{Response, StatusCode};
+    /// use lil_http::Response;
+    /// # use lil_http::{StatusCode, Body};
     ///
     /// let response = Response::not_found();
     ///
-    /// assert_eq!(response.status, StatusCode::NotFound);
-    /// assert_eq!(response.body, Some("Not Found".to_string()));
+    /// # assert_eq!(response.status_code, StatusCode::NotFound);
+    /// # assert_eq!(response.body, Body::Text("Not Found".to_string()));
+    /// # assert_eq!(response.headers.get("Content-Type"), Some(&"text/plain".to_string()));
     /// ```
-    #[allow(clippy::must_use_candidate)]
+    #[must_use]
     pub fn not_found() -> Self {
-        let mut resp = Self::text("Not Found");
-        resp.status = StatusCode::NotFound;
-
-        resp
+        Self::text("Not Found").status(StatusCode::NotFound)
     }
 
     /// Create a 400 Bad Request response.
     ///
     /// # Example
     /// ```
-    /// use lil_http::{Response, StatusCode};
+    /// use lil_http::Response;
+    /// # use lil_http::{StatusCode, Body};
     ///
     /// let response = Response::invalid_request();
     ///
-    /// assert_eq!(response.status, StatusCode::BadRequest);
-    /// assert_eq!(response.body, Some("Invalid Request".to_string()));
+    /// # assert_eq!(response.status_code, StatusCode::BadRequest);
+    /// # assert_eq!(response.body, Body::Text("Invalid Request".to_string()));
+    /// # assert_eq!(response.headers.get("Content-Type"), Some(&"text/plain".to_string()));
     /// ```
-    #[allow(clippy::must_use_candidate)]
+    #[must_use]
     pub fn invalid_request() -> Self {
-        let mut resp = Self::text("Invalid Request");
-        resp.status = StatusCode::BadRequest;
-
-        resp
+        Self::text("Invalid Request").status(StatusCode::BadRequest)
     }
 
     /// Create a 405 Method Not Allowed response.
@@ -146,29 +158,82 @@ impl Response {
     ///
     /// # Example
     /// ```
-    /// use lil_http::{Response, StatusCode, Method};
+    /// use lil_http::{Response, Method};
+    /// # use lil_http::{StatusCode, Body};
     ///
     /// let response = Response::method_not_allowed(&[Method::Get, Method::Post]);
     ///
-    /// assert_eq!(response.status, StatusCode::MethodNotAllowed);
-    /// assert_eq!(response.headers.get("Allow"), Some(&"GET, POST".to_string()));
-    /// assert_eq!(response.body, Some("Method Not Allowed".to_string()));
+    /// # assert_eq!(response.status_code, StatusCode::MethodNotAllowed);
+    /// # assert_eq!(response.body, Body::Text("Method Not Allowed".to_string()));
+    /// # assert_eq!(response.headers.get("Allow"), Some(&"GET, POST".to_string()));
     /// ```
-    #[allow(clippy::must_use_candidate)]
+    #[must_use]
     pub fn method_not_allowed(methods: &[Method]) -> Self {
-        let mut resp = Self::text("Method Not Allowed");
+        let mut methods = methods
+            .iter()
+            .map(std::string::ToString::to_string)
+            .collect::<Vec<String>>();
+        methods.sort();
 
-        resp.status = StatusCode::MethodNotAllowed;
-        resp.headers.insert(
-            "Allow".into(),
-            methods
-                .iter()
-                .map(std::string::ToString::to_string)
-                .collect::<Vec<String>>()
-                .join(", "),
-        );
+        Self::text("Method Not Allowed")
+            .status(StatusCode::MethodNotAllowed)
+            .header("Allow", &methods.join(", "))
+    }
 
-        resp
+    /// Set the status code of the response.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use lil_http::{Response, StatusCode};
+    ///
+    /// let response = Response::text("...")
+    ///   .status(StatusCode::NotFound);
+    ///
+    /// # assert_eq!(response.status_code, StatusCode::NotFound);
+    #[must_use]
+    pub fn status(&mut self, code: StatusCode) -> Self {
+        self.status_code = code;
+
+        self.clone()
+    }
+
+    /// Add a header to the response.
+    /// If the header already exists, it will be overwritten.
+    ///
+    /// # Example
+    /// ```
+    /// use lil_http::Response;
+    ///
+    /// let response = Response::text("Hello, World!")
+    ///    .header("X-Example", "test-header");
+    ///
+    /// # assert_eq!(response.headers.get("X-Example"), Some(&"test-header".to_string()));
+    #[must_use]
+    pub fn header(&mut self, name: &str, value: &str) -> Self {
+        self.headers.insert(name.into(), value.into());
+
+        self.clone()
+    }
+
+    /// Set the body of the response.
+    ///
+    /// # Example
+    /// ```
+    /// use lil_http::{Response, Body};
+    /// use serde_json::json;
+    ///
+    /// let response = Response::ok().body(
+    ///   Body::Json(json!({ "message": "Hello, World!" }))
+    /// );
+    ///
+    ///
+    /// # assert_eq!(response.body, Body::Json(json!({ "message": "Hello, World!" })));
+    #[must_use]
+    pub fn body(&mut self, body: Body) -> Self {
+        self.body = body;
+
+        self.clone()
     }
 }
 
@@ -177,12 +242,12 @@ impl ToString for Response {
     fn to_string(&self) -> String {
         let mut str_response = String::new();
 
-        str_response.push_str(&format!("HTTP/1.1 {}{CRLF}", self.status));
+        str_response.push_str(&format!("HTTP/1.1 {}{CRLF}", self.status_code));
         for (name, value) in &self.headers {
             str_response.push_str(&format!("{name}: {value}{CRLF}"));
         }
         str_response.push_str(CRLF);
-        str_response.push_str(self.body.as_deref().unwrap_or_default());
+        str_response.push_str(&self.body.to_string());
 
         str_response
     }

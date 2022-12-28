@@ -1,10 +1,9 @@
+use serde_json::Value;
 use std::{
     collections::HashMap,
     fmt::{Display, Formatter},
     io::Error,
 };
-
-use serde_json::Value;
 
 const CRLF: &str = "\r\n";
 
@@ -53,7 +52,7 @@ impl Display for Method {
 /// The HTTP Body of a request.
 ///
 /// See [RFC 7230](https://tools.ietf.org/html/rfc7230#section-3.3) for more information.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum Body {
     /// No body.
     None,
