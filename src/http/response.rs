@@ -64,7 +64,7 @@ impl Response {
     /// # assert_eq!(response.headers.len(), 0);
     /// # assert_eq!(response.status_code, StatusCode::Ok);
     /// ```
-    #[allow(clippy::must_use_candidate)]
+    #[must_use]
     pub fn ok() -> Self {
         Self {
             body: Body::None,
@@ -86,7 +86,7 @@ impl Response {
     /// # assert_eq!(response.body, Body::Text("Hello, World!".to_string()));
     /// # assert_eq!(response.headers.get("Content-Type"), Some(&"text/plain".to_string()));
     /// ```
-    #[allow(clippy::must_use_candidate)]
+    #[must_use]
     pub fn text(body: &str) -> Self {
         Self::ok()
             .header("Content-Type", "text/plain")
@@ -109,11 +109,11 @@ impl Response {
     /// # assert_eq!(response.body, Body::Json(json!({ "message": "Hello, World!" })));
     /// # assert_eq!(response.headers.get("Content-Type"), Some(&"application/json".to_string()));
     /// ```
-    #[allow(clippy::must_use_candidate)]
+    #[must_use]
     pub fn json(body: &Value) -> Self {
         Self::ok()
             .header("Content-Type", "application/json")
-            .body(Body::Json(body.to_owned()))
+            .body(Body::Json(body.clone()))
     }
 
     /// Create a 404 Not Found response.
@@ -129,7 +129,7 @@ impl Response {
     /// # assert_eq!(response.body, Body::Text("Not Found".to_string()));
     /// # assert_eq!(response.headers.get("Content-Type"), Some(&"text/plain".to_string()));
     /// ```
-    #[allow(clippy::must_use_candidate)]
+    #[must_use]
     pub fn not_found() -> Self {
         Self::text("Not Found").status(StatusCode::NotFound)
     }
@@ -147,7 +147,7 @@ impl Response {
     /// # assert_eq!(response.body, Body::Text("Invalid Request".to_string()));
     /// # assert_eq!(response.headers.get("Content-Type"), Some(&"text/plain".to_string()));
     /// ```
-    #[allow(clippy::must_use_candidate)]
+    #[must_use]
     pub fn invalid_request() -> Self {
         Self::text("Invalid Request").status(StatusCode::BadRequest)
     }
@@ -167,11 +167,11 @@ impl Response {
     /// # assert_eq!(response.body, Body::Text("Method Not Allowed".to_string()));
     /// # assert_eq!(response.headers.get("Allow"), Some(&"GET, POST".to_string()));
     /// ```
-    #[allow(clippy::must_use_candidate)]
+    #[must_use]
     pub fn method_not_allowed(methods: &[Method]) -> Self {
         let mut methods = methods
             .iter()
-            .map(|m| m.to_string())
+            .map(std::string::ToString::to_string)
             .collect::<Vec<String>>();
         methods.sort();
 
@@ -190,10 +190,11 @@ impl Response {
     /// let response = Response::text("Nope").status(StatusCode::NotFound);
     ///
     /// # assert_eq!(response.status_code, StatusCode::NotFound);
+    #[must_use]
     pub fn status(&mut self, code: StatusCode) -> Self {
         self.status_code = code;
 
-        self.to_owned()
+        self.clone()
     }
 
     /// Add a header to the response.
@@ -207,10 +208,11 @@ impl Response {
     ///    .header("X-Example", "test-header");
     ///
     /// # assert_eq!(response.headers.get("X-Example"), Some(&"test-header".to_string()));
+    #[must_use]
     pub fn header(&mut self, name: &str, value: &str) -> Self {
         self.headers.insert(name.into(), value.into());
 
-        self.to_owned()
+        self.clone()
     }
 
     /// Set the body of the response.
@@ -224,10 +226,11 @@ impl Response {
     ///    .body(Body::Json(json!({ "message": "Hello, World!" })));
     ///
     /// # assert_eq!(response.body, Body::Json(json!({ "message": "Hello, World!" })));
+    #[must_use]
     pub fn body(&mut self, body: Body) -> Self {
         self.body = body;
 
-        self.to_owned()
+        self.clone()
     }
 }
 
