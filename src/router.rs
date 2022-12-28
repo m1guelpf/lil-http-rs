@@ -63,6 +63,7 @@ impl Router {
     ///     Response::text("Hello, World!")
     /// });
     /// ```
+    #[allow(rustdoc::private_doc_tests)]
     pub fn get(
         &mut self,
         path: &str,
@@ -84,6 +85,7 @@ impl Router {
     ///    Response::text("Hello, World!")
     /// });
     /// ```
+    #[allow(rustdoc::private_doc_tests)]
     pub fn post(
         &mut self,
         path: &str,
@@ -105,6 +107,7 @@ impl Router {
     ///    Response::text("Hello, World!")
     /// });
     /// ```
+    #[allow(rustdoc::private_doc_tests)]
     pub fn put(
         &mut self,
         path: &str,
@@ -126,6 +129,7 @@ impl Router {
     ///    Response::text("Hello, World!")
     /// });
     /// ```
+    #[allow(rustdoc::private_doc_tests)]
     pub fn delete(
         &mut self,
         path: &str,

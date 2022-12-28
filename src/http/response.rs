@@ -187,7 +187,8 @@ impl Response {
     /// ```
     /// use lil_http::{Response, StatusCode};
     ///
-    /// let response = Response::text("Nope").status(StatusCode::NotFound);
+    /// let response = Response::text("...")
+    ///   .status(StatusCode::NotFound);
     ///
     /// # assert_eq!(response.status_code, StatusCode::NotFound);
     #[must_use]
@@ -222,8 +223,10 @@ impl Response {
     /// use lil_http::{Response, Body};
     /// use serde_json::json;
     ///
-    /// let response = Response::ok()
-    ///    .body(Body::Json(json!({ "message": "Hello, World!" })));
+    /// let response = Response::ok().body(
+    ///   Body::Json(json!({ "message": "Hello, World!" }))
+    /// );
+    ///
     ///
     /// # assert_eq!(response.body, Body::Json(json!({ "message": "Hello, World!" })));
     #[must_use]
