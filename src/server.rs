@@ -5,8 +5,35 @@ use tokio::{
     net::{TcpListener, TcpStream},
 };
 
+/// The server is responsible for accepting connections and routing requests.
+///
+/// # Example
+///
+/// ```rust,no_run
+/// use lil_http::{Server, Response};
+///
+/// #[tokio::main]
+/// async fn main() {
+///    let mut http = Server::new().unwrap();
+///
+///    http.routes
+///        .get("/", |request| {
+///           println!("Received {} request to {}", request.method, request.path);
+///
+///          Response::text("Hello, World!")
+///       });
+///
+///    http.run().await;
+/// }
+/// ```
+///
+/// # Notes
+///
+/// The server will not stop until the process is killed.
 pub struct Server {
+    /// The underlying TCP listener.
     listener: TcpListener,
+    /// The router instance that will handle requests.
     pub routes: Router,
 }
 
@@ -35,7 +62,6 @@ impl Server {
     /// # Panics
     ///
     /// Will panic if the server fails to accept a connection.
-    #[must_use = "Remember to start the server!"]
     pub async fn run(&self) {
         loop {
             let incoming = self.listener.accept().await;

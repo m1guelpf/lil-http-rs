@@ -17,6 +17,7 @@ impl From<&Request> for Route {
     }
 }
 
+/// The router is responsible for matching requests to handlers.
 #[derive(Clone)]
 pub struct Router {
     routes: HashMap<Route, Arc<dyn Fn(Request) -> Response + Sync + Send>>,

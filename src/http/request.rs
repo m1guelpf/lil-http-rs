@@ -8,11 +8,21 @@ use serde_json::Value;
 
 const CRLF: &str = "\r\n";
 
+/// The HTTP Method of a request.
+///
+/// See [RFC 7231](https://tools.ietf.org/html/rfc7231#section-4) for more information.
 #[derive(Debug, Clone, Copy, Hash, Eq, PartialEq)]
 pub enum Method {
+    /// HEAD method.
     Head,
+    /// GET method.
     Get,
+    /// POST method.
     Post,
+    /// PUT method.
+    Put,
+    /// DELETE method.
+    Delete,
 }
 
 impl From<String> for Method {
@@ -21,6 +31,8 @@ impl From<String> for Method {
             "HEAD" => Self::Head,
             "GET" => Self::Get,
             "POST" => Self::Post,
+            "PUT" => Self::Put,
+            "DELETE" => Self::Delete,
             _ => todo!(),
         }
     }
@@ -32,14 +44,22 @@ impl Display for Method {
             Self::Head => write!(f, "HEAD"),
             Self::Get => write!(f, "GET"),
             Self::Post => write!(f, "POST"),
+            Self::Put => write!(f, "PUT"),
+            Self::Delete => write!(f, "DELETE"),
         }
     }
 }
 
+/// The HTTP Body of a request.
+///
+/// See [RFC 7230](https://tools.ietf.org/html/rfc7230#section-3.3) for more information.
 #[derive(Debug, Clone)]
 pub enum Body {
+    /// No body.
     None,
+    /// A text/plain body.
     Text(String),
+    /// A deserialized application/json body.
     Json(Value),
 }
 
@@ -69,15 +89,32 @@ impl Display for Body {
     }
 }
 
+/// An HTTP 1.1 request.
+///
+/// See [RFC 7230](https://tools.ietf.org/html/rfc7230) for more information.
 #[derive(Debug, Clone)]
 pub struct Request {
+    /// The HTTP method of the request.
     pub method: Method,
+    /// The path of the request.
     pub path: String,
+    /// The parsed query of the request.
     pub query: HashMap<String, String>,
+    /// The parsed headers of the request.
     pub headers: HashMap<String, String>,
+    /// The body of the request.
     pub body: Body,
 }
 
+/// Try to parse a request object from a buffer.
+///
+/// # Errors
+///
+/// Will return an error if the buffer is empty.
+///
+/// # Panics
+///
+/// Will panic if the request method is not valid.
 impl TryFrom<&[u8; 1024]> for Request {
     type Error = Error;
 

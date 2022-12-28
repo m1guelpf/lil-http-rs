@@ -1,15 +1,18 @@
 [package]
 name = "lil_http"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "A simple web framework with no external dependencies"
 license = "MIT"
 repository = "https://github.com/m1guelpf/lil-http-rs"
 readme = "README.md"
 keywords = ["web", "framework", "http"]
-categories = ["web-programming::frameworks"]
+categories = ["web-programming::http-server"]
 
 [dependencies]
 anyhow = "1.0.68"
 serde_json = "1.0.91"
 tokio = { version = "1.23.0", features = ["full"] }
+
+[dev-dependencies]
+tokio-test = "0.4.2"
