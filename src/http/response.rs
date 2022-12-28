@@ -62,7 +62,7 @@ impl Response {
     ///
     /// # assert_eq!(response.body, Body::None);
     /// # assert_eq!(response.headers.len(), 0);
-    /// # assert_eq!(response.status, StatusCode::Ok);
+    /// # assert_eq!(response.status_code, StatusCode::Ok);
     /// ```
     #[allow(clippy::must_use_candidate)]
     pub fn ok() -> Self {
@@ -82,7 +82,7 @@ impl Response {
     ///
     /// let response = Response::text("Hello, World!");
     ///
-    /// # assert_eq!(response.status, StatusCode::Ok);
+    /// # assert_eq!(response.status_code, StatusCode::Ok);
     /// # assert_eq!(response.body, Body::Text("Hello, World!".to_string()));
     /// # assert_eq!(response.headers.get("Content-Type"), Some(&"text/plain".to_string()));
     /// ```
@@ -105,7 +105,7 @@ impl Response {
     ///    "message": "Hello, World!"
     /// }));
     ///
-    /// # assert_eq!(response.status, StatusCode::Ok);
+    /// # assert_eq!(response.status_code, StatusCode::Ok);
     /// # assert_eq!(response.body, Body::Json(json!({ "message": "Hello, World!" })));
     /// # assert_eq!(response.headers.get("Content-Type"), Some(&"application/json".to_string()));
     /// ```
@@ -125,7 +125,7 @@ impl Response {
     ///
     /// let response = Response::not_found();
     ///
-    /// # assert_eq!(response.status, StatusCode::NotFound);
+    /// # assert_eq!(response.status_code, StatusCode::NotFound);
     /// # assert_eq!(response.body, Body::Text("Not Found".to_string()));
     /// # assert_eq!(response.headers.get("Content-Type"), Some(&"text/plain".to_string()));
     /// ```
@@ -143,7 +143,7 @@ impl Response {
     ///
     /// let response = Response::invalid_request();
     ///
-    /// # assert_eq!(response.status, StatusCode::BadRequest);
+    /// # assert_eq!(response.status_code, StatusCode::BadRequest);
     /// # assert_eq!(response.body, Body::Text("Invalid Request".to_string()));
     /// # assert_eq!(response.headers.get("Content-Type"), Some(&"text/plain".to_string()));
     /// ```
@@ -163,7 +163,7 @@ impl Response {
     ///
     /// let response = Response::method_not_allowed(&[Method::Get, Method::Post]);
     ///
-    /// # assert_eq!(response.status, StatusCode::MethodNotAllowed);
+    /// # assert_eq!(response.status_code, StatusCode::MethodNotAllowed);
     /// # assert_eq!(response.body, Body::Text("Method Not Allowed".to_string()));
     /// # assert_eq!(response.headers.get("Allow"), Some(&"GET, POST".to_string()));
     /// ```
@@ -189,7 +189,7 @@ impl Response {
     ///
     /// let response = Response::text("Nope").status(StatusCode::NotFound);
     ///
-    /// # assert_eq!(response.status, StatusCode::NotFound);
+    /// # assert_eq!(response.status_code, StatusCode::NotFound);
     pub fn status(&mut self, code: StatusCode) -> Self {
         self.status_code = code;
 
