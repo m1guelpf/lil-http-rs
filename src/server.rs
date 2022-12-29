@@ -98,19 +98,24 @@ impl Server {
 
 #[cfg(test)]
 mod tests {
+    use serial_test::serial;
+
     use super::*;
 
     #[tokio::test]
+    #[serial]
     async fn test_can_create_server() {
         let _ = Server::new().await.unwrap();
     }
 
     #[tokio::test]
+    #[serial]
     async fn test_can_create_server_with_port() {
         let _ = Server::with_port("3001").await.unwrap();
     }
 
     #[tokio::test]
+    #[serial]
     async fn test_can_run_server() {
         let http = Server::with_port("1023").await.unwrap();
 
