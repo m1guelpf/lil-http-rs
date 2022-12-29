@@ -117,12 +117,12 @@ mod tests {
     #[tokio::test]
     #[serial]
     async fn test_can_run_server() {
-        let http = Server::with_port("1023").await.unwrap();
+        let http = Server::with_port("4012").await.unwrap();
 
         tokio::spawn(async move {
             http.run().await;
         });
 
-        let _ = TcpStream::connect("127.0.0.1:1023").await.unwrap();
+        let _ = TcpStream::connect("127.0.0.1:4012").await.unwrap();
     }
 }
