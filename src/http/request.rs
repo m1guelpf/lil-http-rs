@@ -147,7 +147,7 @@ impl TryFrom<&[u8; 1024]> for Request {
                 .split('&')
                 .map(|pair| {
                     let mut pair = pair.split('=');
-                    let key = pair.next().unwrap().trim().to_lowercase().to_string();
+                    let key = pair.next().unwrap().trim().to_lowercase();
                     let value = pair.next().unwrap().trim().to_string();
 
                     (key, value)
