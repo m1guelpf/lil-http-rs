@@ -19,7 +19,7 @@ use lil_http::{Body, Response, Server};
 
 #[tokio::main]
 async fn main() {
-    let mut http = Server::new().unwrap();
+    let mut http = Server::new().await.unwrap();
 
     http.routes
         .get("/", |request| {

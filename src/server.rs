@@ -14,7 +14,7 @@ use tokio::{
 ///
 /// #[tokio::main]
 /// async fn main() {
-///    let mut http = Server::new().unwrap();
+///    let mut http = Server::new().await.unwrap();
 ///
 ///    http.routes
 ///        .get("/", |request| {
@@ -41,18 +41,15 @@ impl Server {
     /// # Errors
     ///
     /// Will return an error if port 3000 is already in use.
-    #[must_use]
-    pub fn new() -> Result<Self> {
-        Self::with_port("3000")
+    pub async fn new() -> Result<Self> {
+        Self::with_port("3000").await
     }
 
     /// # Errors
     ///
     /// Will return an error if the port is already in use.
-    #[must_use]
-    pub fn with_port(port: &str) -> Result<Self> {
-        let std_listener = std::net::TcpListener::bind(format!("0.0.0.0:{port}"))?;
-        let listener = TcpListener::from_std(std_listener)?;
+    pub async fn with_port(port: &str) -> Result<Self> {
+        let listener = TcpListener::bind(format!("0.0.0.0:{port}")).await?;
         println!("Server listening on port {port}");
 
         Ok(Self {
@@ -105,23 +102,22 @@ mod tests {
 
     #[tokio::test]
     async fn test_can_create_server() {
-        let _ = Server::new().unwrap();
+        let _ = Server::new().await.unwrap();
     }
 
     #[tokio::test]
     async fn test_can_create_server_with_port() {
-        let _ = Server::with_port("3001").unwrap();
+        let _ = Server::with_port("3001").await.unwrap();
     }
 
     #[tokio::test]
     async fn test_can_run_server() {
-        let http = Server::new().unwrap();
+        let http = Server::with_port("1023").await.unwrap();
 
-        // run the server without blocking the test
         tokio::spawn(async move {
             http.run().await;
         });
 
-        let _ = TcpStream::connect("127.0.0.1:3000").await.unwrap();
+        let _ = TcpStream::connect("127.0.0.1:1023").await.unwrap();
     }
 }
