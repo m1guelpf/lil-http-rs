@@ -147,7 +147,7 @@ impl TryFrom<&[u8; 1024]> for Request {
                 .split('&')
                 .map(|pair| {
                     let mut pair = pair.split('=');
-                    let key = pair.next().unwrap().trim().to_string();
+                    let key = pair.next().unwrap().trim().to_lowercase();
                     let value = pair.next().unwrap().trim().to_string();
 
                     (key, value)
@@ -165,20 +165,23 @@ impl TryFrom<&[u8; 1024]> for Request {
             let value = header.next().unwrap();
 
             let value = String::from_utf8_lossy(value).trim().to_string();
-            let name = String::from_utf8_lossy(name).trim().to_string();
+            let name = String::from_utf8_lossy(name)
+                .trim()
+                .to_lowercase()
+                .to_string();
 
             headers.insert(name, value);
             buff_read += line.len() + 1;
         }
 
-        if let Some(content_length) = headers.get("Content-Length") {
+        if let Some(content_length) = headers.get("content-length") {
             let content_length = content_length.parse::<usize>().unwrap();
 
             body = Body::parse(
                 String::from_utf8_lossy(&buf[buff_read..buff_read + content_length])
                     .trim()
                     .to_string(),
-                headers.get("Content-Type"),
+                headers.get("content-type"),
             );
         }
 
